@@ -35,11 +35,13 @@
             --void-warning: #f59e0b;
             --void-border: rgba(109, 40, 217, 0.3);
             --void-glow: rgba(34, 211, 238, 0.7);
+            --cursor-size: 20px;
         }
 
         html {
             scroll-behavior: smooth;
             overflow-x: hidden;
+            cursor: none;
         }
 
         body {
@@ -54,18 +56,77 @@
                 url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%236d28d9' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
-        /* ===== CUSTOM CURSOR ===== */
+        /* ===== ENHANCED CUSTOM CURSOR ===== */
         #custom-cursor {
             position: fixed;
-            width: 20px;
-            height: 20px;
+            width: var(--cursor-size);
+            height: var(--cursor-size);
             border-radius: 50%;
             background: radial-gradient(circle, var(--void-energy) 0%, transparent 70%);
             pointer-events: none;
             z-index: 9999;
             mix-blend-mode: screen;
-            transition: transform 0.1s ease;
-            box-shadow: 0 0 20px var(--void-energy);
+            transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease;
+            box-shadow: 
+                0 0 20px var(--void-energy),
+                0 0 40px rgba(34, 211, 238, 0.3);
+            filter: blur(0.5px);
+        }
+
+        #custom-cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: calc(var(--cursor-size) * 0.3);
+            height: calc(var(--cursor-size) * 0.3);
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        #custom-cursor.click-effect {
+            animation: cursorClick 0.5s ease;
+        }
+
+        @keyframes cursorClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.5); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #custom-cursor.hover-effect {
+            width: calc(var(--cursor-size) * 1.8);
+            height: calc(var(--cursor-size) * 1.8);
+            background: radial-gradient(circle, var(--void-accent) 0%, transparent 70%);
+            mix-blend-mode: difference;
+        }
+
+        #cursor-trail {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+        }
+
+        .trail-dot {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--void-energy);
+            opacity: 0;
+            animation: fadeTrail 0.6s forwards;
+        }
+
+        @keyframes fadeTrail {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0); }
+        }
+
+        /* Interactive elements cursor effects */
+        a, button, .enchantment-card, .character-card, .gallery-item, .nav-item, .stat-card {
+            cursor: none;
         }
 
         /* ===== LOADING SCREEN ===== */
@@ -106,6 +167,23 @@
             border-radius: 2px;
             overflow: hidden;
             margin-top: 20px;
+            position: relative;
+        }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: loadingShine 2s infinite;
+        }
+
+        @keyframes loadingShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .loading-progress {
@@ -114,6 +192,8 @@
             background: linear-gradient(90deg, var(--void-accent), var(--void-energy));
             border-radius: 2px;
             transition: width 0.3s ease;
+            position: relative;
+            z-index: 2;
         }
 
         .loading-text {
@@ -123,6 +203,7 @@
             letter-spacing: 2px;
             color: var(--void-text-secondary);
             text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
         }
 
         /* ===== LOGIN SCREEN ===== */
@@ -142,14 +223,25 @@
         }
 
         .login-container {
-            background: rgba(10, 10, 26, 0.9);
+            background: rgba(10, 10, 26, 0.95);
             border: 1px solid var(--void-border);
             border-radius: 12px;
             padding: 40px;
             width: 100%;
             max-width: 400px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(109, 40, 217, 0.2);
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .login-container:hover {
+            transform: perspective(1000px) rotateX(0deg);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.7),
+                0 0 80px rgba(34, 211, 238, 0.3);
         }
 
         .login-title {
@@ -161,25 +253,31 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+            letter-spacing: 1px;
         }
 
         .login-input {
             width: 100%;
             padding: 15px;
             margin-bottom: 20px;
-            background: rgba(26, 11, 46, 0.5);
+            background: rgba(26, 11, 46, 0.7);
             border: 1px solid var(--void-border);
             border-radius: 8px;
             color: var(--void-text);
             font-family: 'Inter', sans-serif;
             font-size: 16px;
             transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         .login-input:focus {
             outline: none;
             border-color: var(--void-energy);
-            box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
+            box-shadow: 
+                0 0 15px rgba(34, 211, 238, 0.3),
+                inset 0 2px 10px rgba(0, 0, 0, 0.3);
+            background: rgba(26, 11, 46, 0.9);
         }
 
         .login-button {
@@ -195,11 +293,30 @@
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .login-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(109, 40, 217, 0.5);
+        }
+
+        .login-button:hover::before {
+            left: 100%;
         }
 
         .login-switch {
@@ -213,6 +330,23 @@
             color: var(--void-energy);
             text-decoration: none;
             cursor: pointer;
+            position: relative;
+            padding-bottom: 2px;
+        }
+
+        .login-switch a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--void-energy);
+            transition: width 0.3s ease;
+        }
+
+        .login-switch a:hover::after {
+            width: 100%;
         }
 
         .login-error {
@@ -221,6 +355,7 @@
             margin-top: 10px;
             text-align: center;
             display: none;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
         }
 
         /* ===== MAIN CONTAINER ===== */
@@ -230,7 +365,7 @@
             transition: opacity 0.5s ease;
         }
 
-        /* ===== HEADER & NAVIGATION ===== */
+        /* ===== ENHANCED HEADER & NAVIGATION ===== */
         .site-header {
             position: fixed;
             top: 0;
@@ -241,21 +376,35 @@
             justify-content: space-between;
             align-items: center;
             z-index: 100;
-            background: rgba(10, 10, 26, 0.9);
+            background: rgba(10, 10, 26, 0.95);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--void-border);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
         }
 
         .logo-icon {
             font-size: 32px;
             color: var(--void-energy);
-            text-shadow: 0 0 15px var(--void-energy);
+            text-shadow: 
+                0 0 15px var(--void-energy),
+                0 0 30px var(--void-accent);
+            animation: logoGlow 3s infinite alternate;
+        }
+
+        @keyframes logoGlow {
+            0% { text-shadow: 0 0 15px var(--void-energy), 0 0 30px var(--void-accent); }
+            100% { text-shadow: 0 0 25px var(--void-energy), 0 0 50px var(--void-accent); }
         }
 
         .logo-text {
@@ -266,6 +415,7 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            letter-spacing: 0.5px;
         }
 
         .nav-menu {
@@ -284,11 +434,30 @@
             border-radius: 6px;
             transition: all 0.3s ease;
             position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(34, 211, 238, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .nav-item:hover::before {
+            width: 150%;
+            height: 150%;
         }
 
         .nav-item:hover, .nav-item.active {
             color: var(--void-energy);
-            background: rgba(34, 211, 238, 0.1);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
         }
 
         .nav-item::after {
@@ -299,12 +468,12 @@
             transform: translateX(-50%);
             width: 0;
             height: 2px;
-            background: var(--void-energy);
+            background: linear-gradient(90deg, transparent, var(--void-energy), transparent);
             transition: width 0.3s ease;
         }
 
         .nav-item:hover::after, .nav-item.active::after {
-            width: 70%;
+            width: 80%;
         }
 
         .user-info {
@@ -317,6 +486,11 @@
             font-family: 'Orbitron', sans-serif;
             color: var(--void-energy);
             font-size: 14px;
+            padding: 8px 15px;
+            background: rgba(34, 211, 238, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .logout-btn {
@@ -329,10 +503,14 @@
             font-size: 13px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .logout-btn:hover {
             background: rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
         }
 
         /* ===== PAGE CONTENT ===== */
@@ -352,12 +530,13 @@
             display: block;
         }
 
-        /* ===== HOME PAGE ===== */
+        /* ===== ENHANCED HOME PAGE ===== */
         .hero-section {
             text-align: center;
             padding: 80px 20px;
             max-width: 1000px;
             margin: 0 auto;
+            position: relative;
         }
 
         .hero-title {
@@ -369,6 +548,8 @@
             background-clip: text;
             color: transparent;
             line-height: 1.2;
+            text-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+            letter-spacing: 1px;
         }
 
         .hero-subtitle {
@@ -379,16 +560,38 @@
             margin-left: auto;
             margin-right: auto;
             line-height: 1.6;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
 
         .countdown-container {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             max-width: 800px;
             margin: 0 auto 60px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.3),
+                0 0 50px rgba(109, 40, 217, 0.2);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--void-energy), var(--void-accent));
+            animation: countdownShine 3s infinite linear;
+        }
+
+        @keyframes countdownShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         .countdown-title {
@@ -398,6 +601,7 @@
             color: var(--void-energy);
             text-transform: uppercase;
             letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
         }
 
         .countdown-display {
@@ -405,12 +609,15 @@
             justify-content: center;
             gap: 30px;
             margin-bottom: 40px;
+            flex-wrap: wrap;
         }
 
         .countdown-unit {
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-width: 120px;
+            position: relative;
         }
 
         .countdown-value {
@@ -418,8 +625,21 @@
             font-size: 64px;
             font-weight: 700;
             color: var(--void-energy);
-            text-shadow: 0 0 20px var(--void-energy);
+            text-shadow: 
+                0 0 20px var(--void-energy),
+                0 0 40px var(--void-accent);
             line-height: 1;
+            position: relative;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(34, 211, 238, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .countdown-value:hover {
+            transform: scale(1.05);
+            background: rgba(0, 0, 0, 0.5);
         }
 
         .countdown-label {
@@ -428,16 +648,20 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-top: 10px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
 
         .server-ip-container {
             margin-top: 40px;
             padding: 30px;
-            background: rgba(10, 10, 26, 0.9);
+            background: rgba(10, 10, 26, 0.95);
             border: 1px solid var(--void-border);
             border-radius: 12px;
             text-align: center;
             display: none;
+            box-shadow: 
+                0 10px 20px rgba(0, 0, 0, 0.2),
+                inset 0 0 30px rgba(34, 211, 238, 0.1);
         }
 
         .ip-reveal-title {
@@ -445,19 +669,33 @@
             font-size: 20px;
             color: var(--void-energy);
             margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .server-ip {
             font-family: 'Orbitron', monospace;
             font-size: 32px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
             padding: 15px 30px;
             border-radius: 8px;
-            border: 1px solid var(--void-energy);
+            border: 2px solid var(--void-energy);
             color: var(--void-energy);
             letter-spacing: 2px;
             margin-bottom: 20px;
             display: inline-block;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+            box-shadow: 
+                0 0 20px rgba(34, 211, 238, 0.3),
+                inset 0 0 20px rgba(34, 211, 238, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .server-ip:hover {
+            transform: scale(1.02);
+            box-shadow: 
+                0 0 30px rgba(34, 211, 238, 0.5),
+                inset 0 0 30px rgba(34, 211, 238, 0.2);
         }
 
         .copy-ip-btn {
@@ -470,11 +708,38 @@
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
         }
 
         .copy-ip-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(109, 40, 217, 0.4);
+        }
+
+        .copy-ip-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .copy-ip-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0, 0); opacity: 0.5; }
+            100% { transform: scale(20, 20); opacity: 0; }
         }
 
         .server-stats {
@@ -486,24 +751,45 @@
         }
 
         .stat-card {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 12px;
             padding: 30px;
             text-align: center;
             min-width: 200px;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, rgba(34, 211, 238, 0.1) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             border-color: var(--void-energy);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
         .stat-icon {
             font-size: 40px;
             color: var(--void-energy);
             margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+            filter: drop-shadow(0 0 5px var(--void-energy));
         }
 
         .stat-value {
@@ -511,6 +797,7 @@
             font-size: 36px;
             color: var(--void-energy);
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
         }
 
         .stat-label {
@@ -527,13 +814,19 @@
         }
 
         .lore-chapter {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             margin-bottom: 40px;
             position: relative;
             overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .lore-chapter:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
         }
 
         .lore-chapter::before {
@@ -543,8 +836,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.1), transparent 50%);
+            background: radial-gradient(circle at top right, rgba(109, 40, 217, 0.15), transparent 60%);
             pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lore-chapter:hover::before {
+            opacity: 0.8;
         }
 
         .chapter-title {
@@ -555,11 +853,12 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .chapter-number {
             display: inline-block;
-            background: var(--void-accent);
+            background: linear-gradient(135deg, var(--void-accent), var(--void-energy));
             color: white;
             width: 50px;
             height: 50px;
@@ -569,6 +868,7 @@
             justify-content: center;
             font-size: 20px;
             font-weight: 700;
+            box-shadow: 0 0 15px rgba(109, 40, 217, 0.5);
         }
 
         .lore-content {
@@ -576,6 +876,7 @@
             line-height: 1.8;
             color: var(--void-text-secondary);
             margin-bottom: 30px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .lore-content p {
@@ -590,16 +891,19 @@
         }
 
         .character-card {
-            background: rgba(10, 10, 26, 0.9);
+            background: rgba(10, 10, 26, 0.95);
             border: 1px solid var(--void-border);
             border-radius: 12px;
             padding: 25px;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .character-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             border-color: var(--void-energy);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
         }
 
         .character-name {
@@ -610,6 +914,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .character-desc {
@@ -628,7 +933,7 @@
         }
 
         .feature-tab {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             color: var(--void-text-secondary);
             padding: 15px 30px;
@@ -639,12 +944,34 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-tab::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(109, 40, 217, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s ease, height 0.4s ease;
+        }
+
+        .feature-tab:hover::before {
+            width: 300%;
+            height: 300%;
         }
 
         .feature-tab:hover, .feature-tab.active {
-            background: var(--void-accent);
+            background: linear-gradient(90deg, var(--void-accent), #4c1d95);
             color: white;
             border-color: var(--void-accent);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(109, 40, 217, 0.3);
         }
 
         .feature-content {
@@ -657,8 +984,8 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .enchantment-grid {
@@ -668,18 +995,19 @@
         }
 
         .enchantment-card {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 12px;
             padding: 25px;
             transition: all 0.3s ease;
             position: relative;
+            overflow: hidden;
         }
 
         .enchantment-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px) scale(1.02);
             border-color: var(--void-energy);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
 
         .enchantment-header {
@@ -693,6 +1021,7 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 18px;
             color: var(--void-energy);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .enchantment-rarity {
@@ -701,18 +1030,20 @@
             border-radius: 20px;
             text-transform: uppercase;
             font-weight: 600;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
-        .rarity-common { background: rgba(34, 211, 238, 0.2); color: var(--void-energy); }
-        .rarity-uncommon { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .rarity-rare { background: rgba(109, 40, 217, 0.2); color: var(--void-accent); }
-        .rarity-very-rare { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .rarity-common { background: rgba(34, 211, 238, 0.2); color: var(--void-energy); border: 1px solid rgba(34, 211, 238, 0.3); }
+        .rarity-uncommon { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .rarity-rare { background: rgba(109, 40, 217, 0.2); color: var(--void-accent); border: 1px solid rgba(109, 40, 217, 0.3); }
+        .rarity-very-rare { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 
         .enchantment-desc {
             font-size: 14px;
             color: var(--void-text-secondary);
             line-height: 1.6;
             margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .enchantment-details {
@@ -720,14 +1051,16 @@
             justify-content: space-between;
             font-size: 13px;
             color: var(--void-text-secondary);
+            opacity: 0.8;
         }
 
         .death-system-visual {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             margin-bottom: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .death-stage-tracker {
@@ -743,9 +1076,10 @@
             top: 50%;
             left: 0;
             right: 0;
-            height: 2px;
+            height: 3px;
             background: linear-gradient(90deg, var(--void-energy), var(--void-accent), #ef4444);
             z-index: 1;
+            box-shadow: 0 0 10px rgba(109, 40, 217, 0.3);
         }
 
         .death-stage {
@@ -754,6 +1088,11 @@
             align-items: center;
             z-index: 2;
             position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .death-stage:hover {
+            transform: scale(1.1);
         }
 
         .stage-circle {
@@ -768,6 +1107,17 @@
             margin-bottom: 10px;
             border: 3px solid;
             background: var(--void-primary);
+            box-shadow: 
+                0 0 15px currentColor,
+                inset 0 0 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stage-circle:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 0 25px currentColor,
+                inset 0 0 15px rgba(0, 0, 0, 0.4);
         }
 
         .stage-ethereal { border-color: var(--void-energy); color: var(--void-energy); }
@@ -782,6 +1132,12 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             text-align: center;
+            color: var(--void-text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .death-stage:hover .stage-name {
+            color: var(--void-energy);
         }
 
         /* ===== RULES PAGE ===== */
@@ -791,11 +1147,16 @@
         }
 
         .rules-category {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .rules-category:hover {
+            transform: translateY(-5px);
         }
 
         .rules-title {
@@ -806,10 +1167,12 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .rules-title i {
             font-size: 28px;
+            filter: drop-shadow(0 0 5px var(--void-energy));
         }
 
         .rule-item {
@@ -818,6 +1181,11 @@
             margin-bottom: 25px;
             padding-bottom: 25px;
             border-bottom: 1px solid rgba(109, 40, 217, 0.2);
+            transition: padding-left 0.3s ease;
+        }
+
+        .rule-item:hover {
+            padding-left: 10px;
         }
 
         .rule-item:last-child {
@@ -827,7 +1195,7 @@
         }
 
         .rule-number {
-            background: var(--void-accent);
+            background: linear-gradient(135deg, var(--void-accent), var(--void-energy));
             color: white;
             width: 40px;
             height: 40px;
@@ -838,6 +1206,7 @@
             font-family: 'Orbitron', sans-serif;
             font-weight: 700;
             flex-shrink: 0;
+            box-shadow: 0 0 15px rgba(109, 40, 217, 0.5);
         }
 
         .rule-content h4 {
@@ -845,19 +1214,22 @@
             font-size: 18px;
             color: var(--void-energy);
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .rule-content p {
             color: var(--void-text-secondary);
             line-height: 1.6;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .appeal-process {
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.15);
             border: 1px solid rgba(239, 68, 68, 0.3);
             border-radius: 12px;
             padding: 30px;
             margin-top: 40px;
+            box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.1);
         }
 
         /* ===== COMMUNITY PAGE ===== */
@@ -868,11 +1240,16 @@
         }
 
         .forum-container, .gallery-container {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 30px;
             height: 100%;
+            transition: transform 0.3s ease;
+        }
+
+        .forum-container:hover, .gallery-container:hover {
+            transform: translateY(-5px);
         }
 
         .forum-header, .gallery-header {
@@ -886,6 +1263,7 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 22px;
             color: var(--void-energy);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .new-post-btn, .upload-btn {
@@ -898,10 +1276,12 @@
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .new-post-btn:hover, .upload-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(109, 40, 217, 0.4);
         }
 
@@ -911,12 +1291,36 @@
             padding-right: 10px;
         }
 
+        .forum-posts::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .forum-posts::-webkit-scrollbar-track {
+            background: rgba(26, 11, 46, 0.5);
+            border-radius: 4px;
+        }
+
+        .forum-posts::-webkit-scrollbar-thumb {
+            background: linear-gradient(var(--void-accent), var(--void-energy));
+            border-radius: 4px;
+        }
+
+        .forum-posts::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(var(--void-energy), var(--void-accent));
+        }
+
         .forum-post {
-            background: rgba(10, 10, 26, 0.9);
+            background: rgba(10, 10, 26, 0.95);
             border: 1px solid var(--void-border);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 15px;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .forum-post:hover {
+            transform: translateX(5px);
+            border-color: var(--void-energy);
         }
 
         .post-header {
@@ -929,6 +1333,7 @@
             font-family: 'Orbitron', sans-serif;
             color: var(--void-energy);
             font-size: 14px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .post-date {
@@ -939,6 +1344,7 @@
         .post-content {
             color: var(--void-text-secondary);
             line-height: 1.6;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .gallery-grid {
@@ -952,19 +1358,44 @@
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             border: 1px solid var(--void-border);
+            position: relative;
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(34, 211, 238, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
         }
 
         .gallery-item:hover {
-            transform: scale(1.05);
+            transform: scale(1.1) rotate(2deg);
             border-color: var(--void-energy);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            z-index: 2;
+        }
+
+        .gallery-item:hover::before {
+            opacity: 1;
         }
 
         .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
         }
 
         /* ===== NEWS PAGE ===== */
@@ -974,16 +1405,18 @@
         }
 
         .news-post-form {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 30px;
             margin-bottom: 40px;
             display: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .news-post-form.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
 
         .form-title {
@@ -991,13 +1424,14 @@
             font-size: 20px;
             color: var(--void-energy);
             margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .news-content-input {
             width: 100%;
             min-height: 150px;
             padding: 15px;
-            background: rgba(10, 10, 26, 0.9);
+            background: rgba(10, 10, 26, 0.95);
             border: 1px solid var(--void-border);
             border-radius: 8px;
             color: var(--void-text);
@@ -1005,6 +1439,16 @@
             font-size: 16px;
             margin-bottom: 20px;
             resize: vertical;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .news-content-input:focus {
+            outline: none;
+            border-color: var(--void-energy);
+            box-shadow: 
+                0 0 15px rgba(34, 211, 238, 0.3),
+                inset 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .news-posts {
@@ -1014,14 +1458,20 @@
         }
 
         .news-post {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .news-post:hover {
+            transform: translateY(-5px);
         }
 
         .news-post.admin-post {
             border-left: 5px solid var(--void-energy);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
         }
 
         .news-post-header {
@@ -1035,6 +1485,7 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 20px;
             color: var(--void-energy);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .news-post-date {
@@ -1045,6 +1496,7 @@
         .news-post-content {
             color: var(--void-text-secondary);
             line-height: 1.8;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         /* ===== JOIN PAGE ===== */
@@ -1067,6 +1519,11 @@
             flex-direction: column;
             align-items: center;
             max-width: 200px;
+            transition: transform 0.3s ease;
+        }
+
+        .join-step:hover {
+            transform: translateY(-10px);
         }
 
         .step-number {
@@ -1082,6 +1539,17 @@
             font-size: 24px;
             font-weight: 700;
             margin-bottom: 20px;
+            box-shadow: 
+                0 0 20px rgba(109, 40, 217, 0.5),
+                inset 0 0 10px rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .join-step:hover .step-number {
+            transform: scale(1.2);
+            box-shadow: 
+                0 0 30px rgba(34, 211, 238, 0.7),
+                inset 0 0 15px rgba(255, 255, 255, 0.3);
         }
 
         .step-title {
@@ -1089,24 +1557,27 @@
             font-size: 18px;
             color: var(--void-energy);
             margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
         .step-desc {
             color: var(--void-text-secondary);
             line-height: 1.6;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .discord-widget {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             margin-top: 50px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .discord-btn {
             display: inline-block;
-            background: #5865F2;
+            background: linear-gradient(90deg, #5865F2, #4752c4);
             color: white;
             padding: 15px 40px;
             border-radius: 8px;
@@ -1115,11 +1586,30 @@
             font-size: 18px;
             margin-top: 20px;
             transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discord-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .discord-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(88, 101, 242, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(88, 101, 242, 0.4);
+        }
+
+        .discord-btn:hover::before {
+            left: 100%;
         }
 
         /* ===== ABOUT PAGE ===== */
@@ -1129,12 +1619,18 @@
         }
 
         .creator-card {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             margin-bottom: 40px;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .creator-card:hover {
+            transform: translateY(-5px);
         }
 
         .creator-avatar {
@@ -1147,6 +1643,15 @@
             justify-content: center;
             margin: 0 auto 30px;
             font-size: 50px;
+            box-shadow: 
+                0 0 30px rgba(109, 40, 217, 0.6),
+                inset 0 0 20px rgba(255, 255, 255, 0.2);
+            animation: avatarGlow 3s infinite alternate;
+        }
+
+        @keyframes avatarGlow {
+            0% { box-shadow: 0 0 30px rgba(109, 40, 217, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.2); }
+            100% { box-shadow: 0 0 50px rgba(34, 211, 238, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.3); }
         }
 
         .creator-name {
@@ -1154,6 +1659,7 @@
             font-size: 32px;
             color: var(--void-energy);
             margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
         }
 
         .creator-role {
@@ -1168,52 +1674,17 @@
             font-size: 16px;
             max-width: 700px;
             margin: 0 auto;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
-        .timeline {
-            position: relative;
-            padding-left: 30px;
+        /* Removed timeline section as requested */
+
+        .credits-section {
+            background: rgba(26, 11, 46, 0.8);
+            border: 1px solid var(--void-border);
+            border-radius: 16px;
+            padding: 40px;
             margin-top: 40px;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--void-energy), var(--void-accent));
-        }
-
-        .timeline-item {
-            position: relative;
-            margin-bottom: 40px;
-            padding-left: 30px;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -36px;
-            top: 5px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--void-energy);
-            border: 3px solid var(--void-primary);
-        }
-
-        .timeline-date {
-            font-family: 'Orbitron', sans-serif;
-            color: var(--void-energy);
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .timeline-content {
-            color: var(--void-text-secondary);
-            line-height: 1.6;
         }
 
         /* ===== ADMIN PANEL ===== */
@@ -1221,14 +1692,22 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: rgba(26, 11, 46, 0.95);
+            background: rgba(26, 11, 46, 0.98);
             border: 1px solid var(--void-energy);
             border-radius: 12px;
             padding: 20px;
             z-index: 1000;
             display: none;
             backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(34, 211, 238, 0.2);
+            animation: panelSlide 0.3s ease;
+        }
+
+        @keyframes panelSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .admin-panel.active {
@@ -1250,7 +1729,17 @@
             font-size: 24px;
             cursor: pointer;
             z-index: 999;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 5px 15px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(34, 211, 238, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 
+                0 10px 25px rgba(0, 0, 0, 0.4),
+                0 0 50px rgba(34, 211, 238, 0.5);
         }
 
         .admin-option {
@@ -1260,12 +1749,16 @@
             padding: 12px 15px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             margin-bottom: 10px;
+            background: rgba(34, 211, 238, 0.05);
+            border: 1px solid transparent;
         }
 
         .admin-option:hover {
-            background: rgba(34, 211, 238, 0.1);
+            background: rgba(34, 211, 238, 0.15);
+            border-color: rgba(34, 211, 238, 0.3);
+            transform: translateX(5px);
         }
 
         .admin-option i {
@@ -1281,16 +1774,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
         }
 
         .modal.active {
             display: flex;
+            animation: modalFade 0.3s ease;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -1303,22 +1802,38 @@
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(34, 211, 238, 0.3);
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
         .modal-close {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: none;
-            border: none;
-            color: var(--void-text-secondary);
-            font-size: 24px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--void-danger);
+            color: var(--void-danger);
+            font-size: 20px;
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .modal-close:hover {
-            color: var(--void-energy);
+            background: rgba(239, 68, 68, 0.4);
+            transform: rotate(90deg);
         }
 
         .modal-title {
@@ -1326,9 +1841,10 @@
             font-size: 24px;
             color: var(--void-energy);
             margin-bottom: 25px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
         }
 
-        /* ===== FOOTER ===== */
+        /* ===== ENHANCED FOOTER ===== */
         .site-footer {
             text-align: center;
             padding: 40px;
@@ -1336,12 +1852,27 @@
             margin-top: 80px;
             color: var(--void-text-secondary);
             font-size: 14px;
+            background: rgba(10, 10, 26, 0.8);
+            backdrop-filter: blur(5px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .site-footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--void-energy), transparent);
         }
 
         .footer-disclaimer {
             max-width: 800px;
             margin: 0 auto 30px;
             line-height: 1.6;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
         .footer-links {
@@ -1355,11 +1886,31 @@
         .footer-link {
             color: var(--void-text-secondary);
             text-decoration: none;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 1px;
+            background: var(--void-energy);
+            transition: width 0.3s ease;
         }
 
         .footer-link:hover {
             color: var(--void-energy);
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+        }
+
+        .footer-link:hover::after {
+            width: 100%;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -1371,27 +1922,32 @@
         }
 
         @media (max-width: 768px) {
-            .site-header { padding: 15px 20px; }
+            .site-header { padding: 15px 20px; flex-wrap: wrap; }
             .page-content { padding: 20px; }
             .hero-section { padding: 40px 20px; }
             .hero-title { font-size: 32px; }
-            .countdown-display { gap: 15px; }
-            .countdown-value { font-size: 36px; }
+            .countdown-display { gap: 10px; }
+            .countdown-value { font-size: 36px; padding: 5px 10px; min-width: 80px; }
             .countdown-label { font-size: 12px; }
             .stat-card { min-width: 150px; padding: 20px; }
             .nav-menu { display: none; } /* Mobile menu would be needed */
             .user-info { flex-direction: column; gap: 10px; align-items: flex-end; }
             .features-tabs { justify-content: flex-start; overflow-x: auto; }
             .community-grid { grid-template-columns: 1fr; }
+            .logo-text { font-size: 20px; }
         }
 
         @media (max-width: 480px) {
             .hero-title { font-size: 28px; }
-            .countdown-value { font-size: 28px; }
-            .countdown-unit { min-width: 70px; }
+            .countdown-value { font-size: 28px; min-width: 70px; }
+            .countdown-unit { min-width: 80px; }
             .stat-card { min-width: 100%; }
             .login-container { padding: 30px 20px; }
             .lore-chapter, .rules-category, .death-system-visual { padding: 25px; }
+            .chapter-title { font-size: 24px; }
+            .chapter-number { width: 40px; height: 40px; font-size: 16px; }
+            .death-stage-tracker { flex-wrap: wrap; justify-content: center; gap: 20px; }
+            .death-stage-tracker::before { display: none; }
         }
 
         /* ===== ENCHANTMENT SUBTABS ===== */
@@ -1401,6 +1957,7 @@
         
         .enchantment-subtab.active {
             display: block;
+            animation: fadeIn 0.5s ease;
         }
 
         /* ===== UTILITY CLASSES ===== */
@@ -1437,11 +1994,12 @@
 
         /* ===== COMMUNITY NOTES ===== */
         .community-notes {
-            background: rgba(26, 11, 46, 0.7);
+            background: rgba(26, 11, 46, 0.8);
             border: 1px solid var(--void-border);
             border-radius: 16px;
             padding: 40px;
             margin-top: 40px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .note-title {
@@ -1452,12 +2010,47 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+        }
+
+        /* ===== NO CURSOR FOR MOBILE ===== */
+        @media (hover: none) and (pointer: coarse) {
+            html { cursor: default; }
+            #custom-cursor, #cursor-trail { display: none; }
+            a, button, .enchantment-card, .character-card, .gallery-item, .nav-item, .stat-card {
+                cursor: pointer;
+            }
+        }
+
+        /* ===== PARTICLE BACKGROUND ===== */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: var(--void-energy);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--void-energy);
+            opacity: 0;
         }
     </style>
 </head>
 <body>
-    <!-- Custom Cursor -->
+    <!-- Enhanced Custom Cursor -->
     <div id="custom-cursor"></div>
+    <div id="cursor-trail"></div>
+    
+    <!-- Particle Background -->
+    <div id="particles"></div>
 
     <!-- Loading Screen -->
     <div id="loading-screen">
@@ -1549,7 +2142,7 @@
                         
                         <div class="server-ip-container" id="ip-container">
                             <div class="ip-reveal-title">SERVER IP RELEASED</div>
-                            <div class="server-ip" id="server-ip">ascensionsmp.org</div>
+                            <div class="server-ip" id="server-ip">play.ascensionsmp.org</div>
                             <button class="copy-ip-btn" id="copy-ip-btn">COPY IP</button>
                             <div class="mt-20 text-success" id="copy-success" style="display: none;">IP copied to clipboard!</div>
                         </div>
@@ -1558,8 +2151,8 @@
                     <div class="server-stats">
                         <div class="stat-card">
                             <div class="stat-icon">⚔️</div>
-                            <div class="stat-value" id="player-count">0</div>
-                            <div class="stat-label">PLAYERS ONLINE</div>
+                            <div class="stat-value" id="player-count">73</div>
+                            <div class="stat-label">CUSTOM BIOMES</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon">🧬</div>
@@ -1573,8 +2166,8 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon">🌌</div>
-                            <div class="stat-value">10k</div>
-                            <div class="stat-label">WORLD BORDER</div>
+                            <div class="stat-value">1.21.10</div>
+                            <div class="stat-label">VERSION</div>
                         </div>
                     </div>
                 </div>
@@ -1769,32 +2362,32 @@
                     </div>
                     
                     <!-- Removed Enchantments Notice -->
-                    <div class="lore-chapter mt-40" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                    <div class="lore-chapter mt-40" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3);">
                         <h3 class="text-danger mb-20"><i class="fas fa-exclamation-triangle"></i> REMOVED ENCHANTMENTS</h3>
                         <div class="lore-content">
                             <p>The following enchantments have been <strong>removed</strong> to ensure balanced and enjoyable gameplay:</p>
                             <div class="character-grid mt-20">
-                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.05);">
                                     <h3 class="character-name"><i class="fas fa-times"></i> Cutter</h3>
                                     <p class="character-desc">Removed - Damaged enemy armor during combat</p>
                                 </div>
-                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.05);">
                                     <h3 class="character-name"><i class="fas fa-times"></i> Ice Shield</h3>
                                     <p class="character-desc">Removed - Made fights slower and less enjoyable</p>
                                 </div>
-                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.05);">
                                     <h3 class="character-name"><i class="fas fa-times"></i> Confusing Arrows</h3>
                                     <p class="character-desc">Removed - Reduced bow spam enjoyment</p>
                                 </div>
-                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.05);">
                                     <h3 class="character-name"><i class="fas fa-times"></i> Treefeller</h3>
                                     <p class="character-desc">Removed - Already available through plugins</p>
                                 </div>
-                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.05);">
                                     <h3 class="character-name"><i class="fas fa-times"></i> Confusion</h3>
                                     <p class="character-desc">Removed - Similar to Ice Shield, made fights sloppy</p>
                                 </div>
-                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5);">
+                                <div class="character-card" style="border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.05);">
                                     <h3 class="character-name"><i class="fas fa-times"></i> Blindness</h3>
                                     <p class="character-desc">Removed - Reduced fun in combat encounters</p>
                                 </div>
@@ -2107,7 +2700,7 @@
                         <div class="join-step">
                             <div class="step-number">1</div>
                             <h3 class="step-title">GET MINECRAFT</h3>
-                            <p class="step-desc">Make sure you have Minecraft Java Edition version 1.21.1 or newer.</p>
+                            <p class="step-desc">Make sure you have Minecraft Java Edition version 1.21.10 or newer.</p>
                         </div>
                         
                         <div class="join-step">
@@ -2125,18 +2718,20 @@
                     
                     <div class="server-ip-container mt-40" style="display: block;">
                         <div class="ip-reveal-title">SERVER INFORMATION</div>
-                        <div class="server-ip">ascensionsmp.org</div>
+                        <div class="server-ip">play.ascensionsmp.org</div>
                         <button class="copy-ip-btn" id="copy-ip-btn-2">COPY IP</button>
                         <div class="mt-20">
-                            <p><strong>Version:</strong> 1.21.1</p>
+                            <p><strong>Version:</strong> 1.21.10</p>
                             <p><strong>Location:</strong> Asia (100ms Asia, 200ms EU, 300ms US)</p>
                             <p><strong>Player Slots:</strong> Dynamic (based on server performance)</p>
+                            <p><strong>Discord:</strong> <a href="https://discord.gg/nFAh8dBbQA" target="_blank" style="color: var(--void-energy);">https://discord.gg/nFAh8dBbQA</a></p>
+                            <p><strong>Partnership/Support Email:</strong> <a href="mailto:skynomod@gmail.com" style="color: var(--void-energy);">skynomod@gmail.com</a></p>
                         </div>
                     </div>
                     
                     <div class="discord-widget mt-40">
                         <h2 class="countdown-title mb-20">JOIN OUR DISCORD</h2>
-                        <p class="lore-content">Get updates, report issues, and connect with other players. All server announcements will be posted here.</p>
+                        <p class="lore-content">Get updates, report issues, and connect with other players. All server announcements will be posted here. Quick support available through Discord.</p>
                         <a href="https://discord.gg/nFAh8dBbQA" target="_blank" class="discord-btn">
                             <i class="fab fa-discord"></i> JOIN DISCORD
                         </a>
@@ -2152,7 +2747,8 @@
                         <h2 class="creator-name">ANTROIKE</h2>
                         <div class="creator-role">CREATOR & ADMIN</div>
                         <div class="creator-bio">
-                            <p>A 15-year-old student from Bangladesh who built this entire server alone while managing studies and board exams. Tired of seeing Minecraft's potential wasted on generic SMPs, I created something with actual depth, lore, and consequences.</p>
+                            <p>A 15-year-old student from Bangladesh who built this entire server alone while managing studies. Tired of seeing Minecraft's potential wasted on generic SMPs, I created something with actual depth, lore, and consequences.</p>
+                            <p class="mt-20"><strong>ZERO ADMIN ABUSE POLICY:</strong> I play by the same rules as everyone else. No admin privileges for personal advantage. The server is built for fair, enjoyable gameplay where skill and strategy matter more than who owns the server.</p>
                             <p class="mt-20">"This server exists because I refused to accept that 'this is just how SMPs are.' I built what I wanted to play. Maybe you'll want to play it too."</p>
                         </div>
                     </div>
@@ -2259,9 +2855,17 @@
                                         <p>Every datapack chosen for a reason. Every plugin configured manually. Custom Skript code written from scratch. Nothing is "just another plugin."</p>
                                     </div>
                                 </div>
+                                
+                                <div class="rule-item">
+                                    <div class="rule-number">5</div>
+                                    <div class="rule-content">
+                                        <h4>ZERO ADMIN ABUSE</h4>
+                                        <p>The owner plays by the same rules. No special privileges, no cheating, no unfair advantages. This is a level playing field for everyone.</p>
+                                    </div>
+                                </div>
                             </div>
                             
-                            <div style="background: rgba(34, 211, 238, 0.1); border: 1px solid var(--void-energy); border-radius: 12px; padding: 30px; margin: 40px 0;">
+                            <div style="background: rgba(34, 211, 238, 0.15); border: 1px solid var(--void-energy); border-radius: 12px; padding: 30px; margin: 40px 0;">
                                 <h4 class="text-center text-void mb-20"><i class="fas fa-quote-left"></i> THE DIFFERENCE BETWEEN FUN AND ENJOYMENT <i class="fas fa-quote-right"></i></h4>
                                 <p class="text-center" style="font-style: italic; font-size: 18px;">
                                     "Fun is what you do in your pastime whether you like it or not.<br>
@@ -2294,43 +2898,51 @@
                         </div>
                     </div>
                     
-                    <div class="lore-chapter">
-                        <h2 class="chapter-title">DEVELOPMENT JOURNEY</h2>
+                    <!-- Updated Credits Section (without timeline) -->
+                    <div class="credits-section">
+                        <h2 class="chapter-title">CONTACT & SUPPORT</h2>
                         
-                        <div class="timeline">
-                            <div class="timeline-item">
-                                <div class="timeline-date">MARCH 2024</div>
-                                <div class="timeline-content">The idea was born. Tired of lifesteal clones and economy grindfests, I envisioned an SMP where death matters and exploration is the focus.</div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">APRIL 2024</div>
-                                <div class="timeline-content">Learned Skript from scratch. Started coding the death system, testing every datapack combination, balancing each enchantment manually.</div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">MAY 2024</div>
-                                <div class="timeline-content">Server development in full swing. Working through sleepless nights between board exams and depression. Built lore that actually matters.</div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">JUNE 2024</div>
-                                <div class="timeline-content">Technical challenges: Aternos failed, VPS was hijacked, tunnel services caused issues. Almost gave up but players asked me to continue.</div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">JULY 2024</div>
-                                <div class="timeline-content">Self-hosting setup. Bought domain, configured tunnel, optimized performance. Server ready after 600+ dollars and countless hours of work.</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="lore-chapter mt-40">
-                        <h2 class="chapter-title">CREDITS & ACKNOWLEDGEMENTS</h2>
                         <div class="lore-content">
+                            <div class="server-stats mt-30">
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fab fa-discord"></i></div>
+                                    <div class="stat-value">DISCORD</div>
+                                    <div class="stat-label">
+                                        <a href="https://discord.gg/nFAh8dBbQA" target="_blank" style="color: var(--void-energy); text-decoration: none; display: block; margin-top: 10px;">
+                                            Join our server
+                                        </a>
+                                        <p style="margin-top: 10px; font-size: 12px;">Quick support, announcements, community</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                                    <div class="stat-value">EMAIL</div>
+                                    <div class="stat-label">
+                                        <a href="mailto:skynomod@gmail.com" style="color: var(--void-energy); text-decoration: none; display: block; margin-top: 10px;">
+                                            skynomod@gmail.com
+                                        </a>
+                                        <p style="margin-top: 10px; font-size: 12px;">Partnerships & serious inquiries</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fas fa-server"></i></div>
+                                    <div class="stat-value">SERVER IP</div>
+                                    <div class="stat-label">
+                                        <div style="color: var(--void-energy); margin-top: 10px; font-family: 'Orbitron', monospace;">
+                                            play.ascensionsmp.org
+                                        </div>
+                                        <p style="margin-top: 10px; font-size: 12px;">Version: 1.21.10</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-void mt-40">CREDITS & ACKNOWLEDGEMENTS</h3>
                             <p><strong>Custom Content:</strong> All terrain generation, structures, and gameplay mechanics are custom-made for AscensionSMP.</p>
                             <p><strong>Special Thanks:</strong> To the developers whose tools make custom content creation possible, and to everyone who believed in this project when I wanted to quit.</p>
                             <p><strong>Disclaimer:</strong> This server is not associated with Mojang or Microsoft. Minecraft is a trademark of Mojang. This is a fan-made project by a student who loves the game.</p>
+                            <p><strong>Fair Play Guarantee:</strong> Zero tolerance for admin abuse. The owner plays by the same rules as everyone else. Your progress is safe and earned.</p>
                         </div>
                     </div>
                 </div>
@@ -2342,6 +2954,7 @@
             <div class="footer-disclaimer">
                 <p>AscensionSMP is a fan-made Minecraft server created by a single student. Not affiliated with Mojang or Microsoft. Minecraft is a trademark of Mojang Studios. All custom content is created for this server and is not for redistribution.</p>
                 <p class="mt-20">This server was built to prove that passion beats perfection, and that one determined person can create something meaningful in a sea of generic SMPs.</p>
+                <p class="mt-20"><strong>Discord:</strong> <a href="https://discord.gg/nFAh8dBbQA" target="_blank" style="color: var(--void-energy);">https://discord.gg/nFAh8dBbQA</a> | <strong>Email:</strong> <a href="mailto:skynomod@gmail.com" style="color: var(--void-energy);">skynomod@gmail.com</a></p>
             </div>
             
             <div class="footer-links">
@@ -2350,9 +2963,11 @@
                 <a href="#" class="footer-link" data-page="join">Join</a>
                 <a href="#" class="footer-link" data-page="about">About</a>
                 <a href="https://discord.gg/nFAh8dBbQA" target="_blank" class="footer-link">Discord</a>
+                <a href="mailto:skynomod@gmail.com" class="footer-link">Contact</a>
             </div>
             
             <p class="mt-30">© 2024 AscensionSMP. All rights reserved. Created with exhaustion and passion by ANTROIKE.</p>
+            <p class="mt-10">Server IP: <strong>play.ascensionsmp.org</strong> | Version: 1.21.10</p>
         </footer>
     </div>
 
@@ -2425,6 +3040,9 @@
         let currentUser = null;
         let countdownInterval = null;
         const ADMIN_USERNAME = 'antroike';
+        let trailInterval = null;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
 
         // ===== COMPLETE ENCHANTMENT DATA =====
         const enchantments = {
@@ -2508,8 +3126,8 @@
 
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize custom cursor
-            initCustomCursor();
+            // Initialize enhanced cursor system
+            initEnhancedCursor();
             
             // Start loading sequence
             startLoading();
@@ -2531,21 +3149,145 @@
             // Start countdown
             startCountdown();
             
-            // Start player count simulation
-            simulatePlayerCount();
-            
             // Add Easter egg listener
             initEasterEgg();
+            
+            // Initialize particles
+            initParticles();
         });
 
-        // ===== CUSTOM CURSOR =====
-        function initCustomCursor() {
+        // ===== ENHANCED CURSOR SYSTEM =====
+        function initEnhancedCursor() {
             const cursor = document.getElementById('custom-cursor');
+            const trail = document.getElementById('cursor-trail');
             
-            document.addEventListener('mousemove', (e) => {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-            });
+            // Only enable enhanced cursor for desktop
+            if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+                document.addEventListener('mousemove', (e) => {
+                    // Smooth cursor movement
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                    
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                    
+                    // Create trail effect
+                    createTrailDot(e.clientX, e.clientY);
+                });
+                
+                // Click effect
+                document.addEventListener('mousedown', () => {
+                    cursor.classList.add('click-effect');
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    cursor.classList.remove('click-effect');
+                });
+                
+                // Hover effects for interactive elements
+                const interactiveElements = document.querySelectorAll('a, button, .enchantment-card, .character-card, .gallery-item, .nav-item, .stat-card, .countdown-value, .server-ip');
+                
+                interactiveElements.forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        cursor.classList.add('hover-effect');
+                    });
+                    
+                    el.addEventListener('mouseleave', () => {
+                        cursor.classList.remove('hover-effect');
+                    });
+                });
+                
+                // Start trail animation
+                trailInterval = setInterval(() => {
+                    if (Math.abs(lastMouseX - cursor.offsetLeft) > 1 || Math.abs(lastMouseY - cursor.offsetTop) > 1) {
+                        createTrailDot(cursor.offsetLeft + 10, cursor.offsetTop + 10);
+                    }
+                }, 50);
+            } else {
+                // Hide custom cursor on mobile
+                cursor.style.display = 'none';
+                trail.style.display = 'none';
+            }
+        }
+        
+        function createTrailDot(x, y) {
+            const trail = document.getElementById('cursor-trail');
+            const dot = document.createElement('div');
+            dot.className = 'trail-dot';
+            dot.style.left = x + 'px';
+            dot.style.top = y + 'px';
+            
+            // Randomize color slightly
+            const hue = 190 + Math.random() * 20;
+            dot.style.background = `hsl(${hue}, 100%, 60%)`;
+            
+            trail.appendChild(dot);
+            
+            // Remove dot after animation
+            setTimeout(() => {
+                if (dot.parentElement === trail) {
+                    trail.removeChild(dot);
+                }
+            }, 600);
+        }
+
+        // ===== PARTICLE BACKGROUND =====
+        function initParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                createParticle(particlesContainer);
+            }
+        }
+        
+        function createParticle(container) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random position
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            particle.style.left = x + 'vw';
+            particle.style.top = y + 'vh';
+            
+            // Random size
+            const size = 1 + Math.random() * 4;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // Random opacity and animation
+            const opacity = 0.1 + Math.random() * 0.3;
+            const duration = 3 + Math.random() * 7;
+            const delay = Math.random() * 5;
+            
+            particle.style.opacity = opacity;
+            particle.style.animation = `particleFloat ${duration}s ease-in-out ${delay}s infinite`;
+            
+            // Add CSS for animation
+            if (!document.querySelector('#particle-styles')) {
+                const style = document.createElement('style');
+                style.id = 'particle-styles';
+                style.textContent = `
+                    @keyframes particleFloat {
+                        0%, 100% { transform: translate(0, 0) scale(1); opacity: ${0.1}; }
+                        25% { transform: translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) scale(1.2); opacity: ${0.3}; }
+                        50% { transform: translate(${Math.random() * 40 - 20}px, ${Math.random() * 40 - 20}px) scale(0.8); opacity: ${0.1}; }
+                        75% { transform: translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) scale(1.1); opacity: ${0.2}; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            container.appendChild(particle);
+            
+            // Remove and recreate particle after animation completes
+            setTimeout(() => {
+                if (particle.parentElement === container) {
+                    container.removeChild(particle);
+                    createParticle(container);
+                }
+            }, (duration + delay) * 1000);
         }
 
         // ===== LOADING SCREEN =====
@@ -2580,6 +3322,48 @@
                     text.textContent = 'ESTABLISHING SOUL CONNECTION...';
                 }
             }, 100);
+        }
+
+        // ===== COUNTDOWN TIMER FUNCTIONS =====
+        function loadCountdownDate() {
+            // Get saved countdown date or create a new one (3 days, 12 hours from first visit)
+            const savedDate = localStorage.getItem('ascension_countdown_date');
+            
+            if (savedDate) {
+                return new Date(savedDate);
+            } else {
+                // Create new countdown date (3 days, 12 hours from now)
+                const countdownDate = new Date();
+                countdownDate.setDate(countdownDate.getDate() + 3);
+                countdownDate.setHours(countdownDate.getHours() + 12);
+                localStorage.setItem('ascension_countdown_date', countdownDate.toISOString());
+                return countdownDate;
+            }
+        }
+
+        function startCountdown() {
+            const countdownDate = loadCountdownDate();
+            
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = countdownDate - now;
+                
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    revealIP();
+                    return;
+                }
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
+                document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
+            }, 1000);
         }
 
         // ===== AUTHENTICATION =====
@@ -2719,6 +3503,18 @@
                     if (e.target === modal) {
                         modal.classList.remove('active');
                     }
+                });
+            });
+            
+            // Interactive hover effects for cards
+            document.querySelectorAll('.stat-card, .character-card, .enchantment-card').forEach(card => {
+                card.addEventListener('mouseenter', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
                 });
             });
         }
@@ -2886,11 +3682,6 @@
                 
                 // Scroll to top
                 window.scrollTo(0, 0);
-                
-                // Special handling for specific pages
-                if (pageId === 'home') {
-                    updatePlayerCount();
-                }
             }
         }
 
@@ -2979,34 +3770,6 @@
         }
 
         // ===== COUNTDOWN TIMER =====
-        function startCountdown() {
-            // Set countdown to 3 days 12 hours from now
-            const countdownDate = new Date();
-            countdownDate.setDate(countdownDate.getDate() + 3);
-            countdownDate.setHours(countdownDate.getHours() + 12);
-            
-            countdownInterval = setInterval(() => {
-                const now = new Date().getTime();
-                const distance = countdownDate - now;
-                
-                if (distance < 0) {
-                    clearInterval(countdownInterval);
-                    revealIP();
-                    return;
-                }
-                
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
-                document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
-                document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
-                document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
-            }, 1000);
-        }
-        
         function revealIP() {
             const ipContainer = document.getElementById('ip-container');
             ipContainer.style.display = 'block';
@@ -3021,13 +3784,14 @@
                     <div style="font-size: 36px; color: var(--void-success); margin-bottom: 20px;">
                         <i class="fas fa-check-circle"></i> READY TO JOIN
                     </div>
-                    <p style="color: var(--void-text-secondary);">The server is now live!</p>
+                    <p style="color: var(--void-text-secondary);">The server is now live! Connect using the IP below:</p>
+                    <div class="server-ip" style="margin: 20px auto;">play.ascensionsmp.org</div>
                 </div>
             `;
         }
         
         function copyIP() {
-            const ip = 'ascensionsmp.org';
+            const ip = 'play.ascensionsmp.org';
             navigator.clipboard.writeText(ip).then(() => {
                 const success = document.getElementById('copy-success');
                 success.style.display = 'block';
@@ -3035,38 +3799,6 @@
                     success.style.display = 'none';
                 }, 3000);
             });
-        }
-
-        // ===== PLAYER COUNT SIMULATION =====
-        function simulatePlayerCount() {
-            // Simulate player count changes
-            setInterval(() => {
-                updatePlayerCount();
-            }, 30000); // Update every 30 seconds
-        }
-        
-        function updatePlayerCount() {
-            const playerCountElement = document.getElementById('player-count');
-            
-            // Simulate realistic player count (0-50 range)
-            const baseCount = currentUser ? 12 : 0;
-            const randomVariation = Math.floor(Math.random() * 8) - 4;
-            const newCount = Math.max(0, baseCount + randomVariation);
-            
-            const currentCount = parseInt(playerCountElement.textContent);
-            if (currentCount !== newCount) {
-                let step = currentCount < newCount ? 1 : -1;
-                let count = currentCount;
-                
-                const counterInterval = setInterval(() => {
-                    count += step;
-                    playerCountElement.textContent = count;
-                    
-                    if (count === newCount) {
-                        clearInterval(counterInterval);
-                    }
-                }, 50);
-            }
         }
 
         // ===== COMMUNITY FEATURES =====
@@ -3144,7 +3876,7 @@
                     id: 1,
                     title: 'SERVER LAUNCH ANNOUNCEMENT',
                     date: new Date().toLocaleDateString(),
-                    content: '<p>AscensionSMP is now live! After months of development by a single tired student, the server is ready for exploration.</p><p>Remember: This isn\'t your typical SMP. Death has consequences, exploration is rewarded, and the Void awaits those who trade too much of their soul.</p><p>Join now at: <strong>ascensionsmp.org</strong></p>',
+                    content: '<p>AscensionSMP is now live! After months of development by a single tired student, the server is ready for exploration.</p><p>Remember: This isn\'t your typical SMP. Death has consequences, exploration is rewarded, and the Void awaits those who trade too much of their soul.</p><p>Join now at: <strong>play.ascensionsmp.org</strong></p><p><strong>Version:</strong> 1.21.10</p><p><strong>Discord:</strong> https://discord.gg/nFAh8dBbQA</p><p><strong>Support Email:</strong> skynomod@gmail.com</p>',
                     isAdmin: true
                 };
                 savedNews.push(welcomeNews);
@@ -3329,6 +4061,7 @@
                 border-radius: 8px;
                 z-index: 10000;
                 animation: slideIn 0.3s ease;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             `;
             
             document.body.appendChild(notification);
