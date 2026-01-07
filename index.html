@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* 所有CSS样式保持不变 - 与您提供的代码完全相同 */
         /* ===== RESET & BASE ===== */
         * {
             margin: 0;
@@ -2123,11 +2124,11 @@
                         <h2 class="countdown-title">SERVER LAUNCH COUNTDOWN</h2>
                         <div class="countdown-display">
                             <div class="countdown-unit">
-                                <div class="countdown-value" id="countdown-days">03</div>
+                                <div class="countdown-value" id="countdown-days">00</div>
                                 <div class="countdown-label">DAYS</div>
                             </div>
                             <div class="countdown-unit">
-                                <div class="countdown-value" id="countdown-hours">12</div>
+                                <div class="countdown-value" id="countdown-hours">00</div>
                                 <div class="countdown-label">HOURS</div>
                             </div>
                             <div class="countdown-unit">
@@ -2966,7 +2967,7 @@
                 <a href="mailto:skynomod@gmail.com" class="footer-link">Contact</a>
             </div>
             
-            <p class="mt-30">© 2024 AscensionSMP. All rights reserved. Created with exhaustion and passion by ANTROIKE.</p>
+            <p class="mt-30">© 2026 AscensionSMP. All rights reserved. Created with exhaustion and passion by ANTROIKE.</p>
             <p class="mt-10">Server IP: <strong>play.ascensionsmp.org</strong> | Version: 1.21.10</p>
         </footer>
     </div>
@@ -3039,7 +3040,7 @@
         // ===== GLOBAL VARIABLES =====
         let currentUser = null;
         let countdownInterval = null;
-        const ADMIN_USERNAME = 'antroike';
+        const ADMIN_USERNAME = 'antroike'; // 只有这个用户名是管理员
         let trailInterval = null;
         let lastMouseX = 0;
         let lastMouseY = 0;
@@ -3146,7 +3147,7 @@
             initNews();
             initGallery();
             
-            // Start countdown
+            // Start countdown - FIXED: 使用固定日期
             startCountdown();
             
             // Add Easter egg listener
@@ -3154,6 +3155,9 @@
             
             // Initialize particles
             initParticles();
+            
+            // 预创建ANTROIKE账户
+            precreateAdminAccount();
         });
 
         // ===== ENHANCED CURSOR SYSTEM =====
@@ -3325,29 +3329,15 @@
         }
 
         // ===== COUNTDOWN TIMER FUNCTIONS =====
-        function loadCountdownDate() {
-            // Get saved countdown date or create a new one (3 days, 12 hours from first visit)
-            const savedDate = localStorage.getItem('ascension_countdown_date');
-            
-            if (savedDate) {
-                return new Date(savedDate);
-            } else {
-                // Create new countdown date (3 days, 12 hours from now)
-                const countdownDate = new Date();
-                countdownDate.setDate(countdownDate.getDate() + 3);
-                countdownDate.setHours(countdownDate.getHours() + 12);
-                localStorage.setItem('ascension_countdown_date', countdownDate.toISOString());
-                return countdownDate;
-            }
-        }
-
         function startCountdown() {
-            const countdownDate = loadCountdownDate();
+            // 服务器启动时间：2026年1月15日 12:00 UTC
+            const launchDate = new Date('2026-01-15T12:00:00Z').getTime();
             
             countdownInterval = setInterval(() => {
                 const now = new Date().getTime();
-                const distance = countdownDate - now;
+                const distance = launchDate - now;
                 
+                // 如果服务器已经启动
                 if (distance < 0) {
                     clearInterval(countdownInterval);
                     revealIP();
@@ -3440,23 +3430,39 @@
             
             // Admin options
             document.getElementById('admin-news').addEventListener('click', () => {
-                document.getElementById('news-post-form').classList.add('active');
-                switchPage('news');
-                toggleAdminPanel();
+                if (currentUser && currentUser.username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+                    document.getElementById('news-post-form').classList.add('active');
+                    switchPage('news');
+                    toggleAdminPanel();
+                } else {
+                    alert('Only ANTROIKE can post news!');
+                }
             });
             
             document.getElementById('admin-gallery').addEventListener('click', () => {
-                document.getElementById('upload-modal').classList.add('active');
-                toggleAdminPanel();
+                if (currentUser && currentUser.username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+                    document.getElementById('upload-modal').classList.add('active');
+                    toggleAdminPanel();
+                } else {
+                    alert('Only ANTROIKE can upload images!');
+                }
             });
             
             document.getElementById('admin-forum').addEventListener('click', () => {
-                document.getElementById('post-modal').classList.add('active');
-                toggleAdminPanel();
+                if (currentUser && currentUser.username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+                    document.getElementById('post-modal').classList.add('active');
+                    toggleAdminPanel();
+                } else {
+                    alert('Only ANTROIKE can pin forum posts!');
+                }
             });
             
             document.getElementById('admin-stats').addEventListener('click', () => {
-                alert('Stats feature coming soon!');
+                if (currentUser && currentUser.username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
+                    alert('Stats feature coming soon!');
+                } else {
+                    alert('Only ANTROIKE can view stats!');
+                }
                 toggleAdminPanel();
             });
             
@@ -3466,7 +3472,7 @@
             });
             
             document.getElementById('upload-btn')?.addEventListener('click', () => {
-                if (currentUser && currentUser.username.toLowerCase() === ADMIN_USERNAME) {
+                if (currentUser && currentUser.username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
                     document.getElementById('upload-modal').classList.add('active');
                 } else {
                     alert('Only ANTROIKE can upload images!');
@@ -3517,6 +3523,15 @@
                     card.style.setProperty('--mouse-y', `${y}px`);
                 });
             });
+        }
+        
+        function precreateAdminAccount() {
+            // 预创建ANTROIKE账户
+            const users = JSON.parse(localStorage.getItem('ascension_users') || '{}');
+            if (!users[ADMIN_USERNAME]) {
+                users[ADMIN_USERNAME] = 'admin123'; // 默认密码
+                localStorage.setItem('ascension_users', JSON.stringify(users));
+            }
         }
         
         function checkLoginStatus() {
@@ -3621,9 +3636,12 @@
             // Update username display
             document.getElementById('display-username').textContent = user.username;
             
-            // Show admin toggle if user is ANTROIKE
-            if (user.username.toLowerCase() === ADMIN_USERNAME) {
+            // Show admin toggle ONLY if user is ANTROIKE (case-insensitive)
+            if (user.username.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
                 document.getElementById('admin-toggle').style.display = 'flex';
+            } else {
+                document.getElementById('admin-toggle').style.display = 'none';
+                document.getElementById('admin-panel').classList.remove('active');
             }
             
             // Load user-specific data
@@ -3848,7 +3866,7 @@
             const postElement = document.createElement('div');
             postElement.className = 'forum-post';
             
-            if (post.author.toLowerCase() === ADMIN_USERNAME) {
+            if (post.author.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
                 postElement.style.borderLeft = '3px solid var(--void-energy)';
             }
             
